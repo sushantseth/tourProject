@@ -1,16 +1,4 @@
 [
-  { "id": 9, "destination": "goa", "name": "goa plan" },
-  { "id": 9, "destination": "goa", "name": "goa plan" },
-  { "id": 9, "destination": "goa", "name": "goa plan" },
-  { "id": 9, "destination": "goa", "name": "goa plan" },
-  { "id": 9, "destination": "goa", "name": "goa plan" },
-  { "id": 9, "destination": "goa", "name": "goa plan" },
-  { "id": 9, "destination": "goa", "name": "goa plan" },
-  { "id": 9, "destination": "goa", "name": "goa plan" },
-  { "id": 9, "destination": "goa", "name": "goa plan" },
-  { "id": 9, "destination": "goa", "name": "goa plan" },
-  { "id": 9, "destination": "dubai", "duration": 1, "difficulty": "easy" },
-  { "id": 9, "destination": "dubai", "duration": 1, "difficulty": "easy" },
   {
     "id": 0,
     "name": "The Forest Hiker",
