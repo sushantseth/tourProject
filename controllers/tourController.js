@@ -1,5 +1,7 @@
 const Tour = require('../models/tourModel')
 
+//add alias middleware for top5Tours
+
 
 //controller to check the params is valid or not
 //this controller will be used in the Router.params middleware which has the fourth value which contains the params value
