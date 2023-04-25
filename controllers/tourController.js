@@ -69,8 +69,9 @@ exports.getTours = async(req,res)=>{
     //price mentioned in query params for sorting (?sort=price)
     //we can mention -> ?sort=-price for descending. Default ascending
     //we can mention second criteria based on which it can sort if tie happens, in this case ratingAverage
-    if(req.query.price){
-     query.sort(price ratingAverage)
+    if(req.query.sort){
+     const sortBy = req.body.sort(",").join(" ")
+     query.sort(sortBy)
     }
      
     const result = await query
