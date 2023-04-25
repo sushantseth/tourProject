@@ -7,7 +7,7 @@ const Controller = require('../controllers/tourController')
 //we can have a specific middleware which checks it
 // Router.param('id',Controller.checkID)
 
-Router.route('/top5tour').get(Controller.aliastop5Tour , Controller.getTours)
+Router.route('/top5tour').get(Controller.aliasTop5Tour , Controller.getTours)
 
 Router.route('/:id').get(Controller.getTourById).patch(Controller.updateTourById).delete(Controller.deleteTourById)
 Router.route('/').post( Controller.addTour).get(Controller.getTours)
