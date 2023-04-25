@@ -1,7 +1,7 @@
 const Tour = require('../models/tourModel')
 
 //add alias middleware for top5Tours
-const aliasTop5Tour = (req,res,next) => {
+exports.aliasTop5Tour = (req,res,next) => {
   req.query.sort = "-ratingsAverage,-price"
   req.query.limit = 5
  next()
@@ -49,7 +49,7 @@ const aliasTop5Tour = (req,res,next) => {
 exports.getTours = async(req,res)=>{
     try{
     
-    // console.log(req.query)
+    console.log(req.query)
     let queryObj = {...req.query}
     const excludedFields = ["page","sort","limit","fields"]
     excludedFields.forEach(el => delete queryObj[el])
@@ -68,31 +68,30 @@ exports.getTours = async(req,res)=>{
             return match;
         }
       }));
-    //   console.log(updatedQuery)
 
-    const query =  Tour.find(updatedQuery)
+    let query =  Tour.find(updatedQuery)
     
+
     //price mentioned in query params for sorting (?sort=price)
-    //we can mention -> ?sort=-price for descending. Default ascending
-    //we can mention second criteria based on which it can sort if tie happens, in this case ratingAverage
     if(req.query.sort){
-     const sortBy = req.body.sort(",").join(" ")
-     query.sort(sortBy)
+        const sortBy = req.query.sort.split(",").join(" ")
+         query.sort(sortBy)
     }
      //used to project only provided fields
     if(req.query.fields){
-     const selectBy = req.body.sort(",").join(" ")
-     query.select(selectBy)
+     const selectBy = req.query.sort.split(",").join(" ")
+     query = query.select(selectBy)
     }else{
      //this will remove those fields in the response
-     query.select("-createdDate") 
+     query = query.select("-createdDate") 
     }
      //implement skip and limit as well
-     if(req.query.limit && req.query.page){
+     if(req.query.limit){
+        console.log("inside limit")
        let limit = req.query.limit ?  req.query.limit : 3
        let page = req.query.skip ? req.query.skip : 1 
        let skipValue = ( page - 1 ) * 3 
-      query.skip(skipValue).limit(limit)
+     query =  query.skip(skipValue).limit(limit)
      }
     const result = await query
     return res.status(200).json({
