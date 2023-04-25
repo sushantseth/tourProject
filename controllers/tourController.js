@@ -1,7 +1,13 @@
 const Tour = require('../models/tourModel')
 
 //add alias middleware for top5Tours
-
+const aliasTop5Tour = (req,res,next) => {
+  req.query.fields = "ratingsAverage,price"
+  req.query.limit = 5
+  
+ 
+ next()
+}
 
 //controller to check the params is valid or not
 //this controller will be used in the Router.params middleware which has the fourth value which contains the params value
