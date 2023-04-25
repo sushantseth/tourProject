@@ -89,7 +89,7 @@ exports.getTours = async(req,res)=>{
      if(req.query.limit){
         console.log("inside limit")
        let limit = req.query.limit ?  req.query.limit : 3
-       let page = req.query.skip ? req.query.skip : 1 
+       let page = req.query.page ? req.query.page : 1 
        let skipValue = ( page - 1 ) * 3 
      query =  query.skip(skipValue).limit(limit)
      }
