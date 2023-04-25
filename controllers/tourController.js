@@ -73,6 +73,14 @@ exports.getTours = async(req,res)=>{
      const sortBy = req.body.sort(",").join(" ")
      query.sort(sortBy)
     }
+     //used to project only provided fields
+    if(req.query.fields){
+     const selectBy = req.body.sort(",").join(" ")
+     query.select(selectBy)
+    }else{
+     //this will remove those fields in the response
+     query.select("-createdDate") 
+    }
      
     const result = await query
     return res.status(200).json({
