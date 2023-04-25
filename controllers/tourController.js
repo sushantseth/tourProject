@@ -2,10 +2,8 @@ const Tour = require('../models/tourModel')
 
 //add alias middleware for top5Tours
 const aliasTop5Tour = (req,res,next) => {
-  req.query.fields = "ratingsAverage,price"
+  req.query.sort = "-ratingsAverage,-price"
   req.query.limit = 5
-  
- 
  next()
 }
 
@@ -90,7 +88,12 @@ exports.getTours = async(req,res)=>{
      query.select("-createdDate") 
     }
      //implement skip and limit as well
-     
+     if(req.query.limit && req.query.page){
+       let limit = req.query.limit ?  req.query.limit : 3
+       let page = req.query.skip ? req.query.skip : 1 
+       let skipValue = ( page - 1 ) * 3 
+      query.skip(skipValue).limit(limit)
+     }
     const result = await query
     return res.status(200).json({
         status :"success",
