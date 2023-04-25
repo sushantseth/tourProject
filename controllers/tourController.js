@@ -81,6 +81,7 @@ exports.getTours = async(req,res)=>{
      //this will remove those fields in the response
      query.select("-createdDate") 
     }
+     //implement skip and limit as well
      
     const result = await query
     return res.status(200).json({
