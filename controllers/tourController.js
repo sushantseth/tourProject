@@ -64,7 +64,16 @@ exports.getTours = async(req,res)=>{
       }));
     //   console.log(updatedQuery)
 
-    const result = await Tour.find(updatedQuery)
+    const query =  Tour.find(updatedQuery)
+    
+    //price mentioned in query params for sorting (?sort=price)
+    //we can mention -> ?sort=-price for descending. Default ascending
+    //we can mention second criteria based on which it can sort if tie happens, in this case ratingAverage
+    if(req.query.price){
+     query.sort(price ratingAverage)
+    }
+     
+    const result = await query
     return res.status(200).json({
         status :"success",
         documentCount : result.length,
