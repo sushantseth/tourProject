@@ -2,7 +2,6 @@ const express = require('express')
 const app = express()
 const fs = require('fs')
 const morgan = require('morgan')
-const tourData = JSON.parse(fs.readFileSync(`${__dirname}/data/tourData.json`))
 app.use(express.json())
 const tourRouter = require('./routes/tourRoute')
 const userRouter = require('./routes/userRoute')
@@ -24,7 +23,7 @@ app.use(morgan('common',
   ))
 }
 
-  app.use(express.static(`${__dirname}/public`))
+app.use(express.static(`${__dirname}/public`))
 
 app.use('/v1/tours',tourRouter)
 app.use('/v1/users',userRouter)

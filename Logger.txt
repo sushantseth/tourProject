@@ -31,3 +31,7 @@
 ::1 - - [25/Apr/2023:19:47:57 +0000] "GET /v1/tours?sort=ratingsAverage&limit=3&page=2 HTTP/1.1" 200 3004
 ::1 - - [25/Apr/2023:19:48:48 +0000] "GET /v1/tours?sort=ratingsAverage,price&limit=3&page=2 HTTP/1.1" 200 3004
 ::1 - - [25/Apr/2023:19:49:17 +0000] "GET /v1/tours?sort=ratingsAverage,price&limit=3&page=2 HTTP/1.1" 200 3004
+::1 - - [27/Apr/2023:21:48:23 +0000] "GET /v1/tours/getTourByMonth HTTP/1.1" 200 884
+::1 - - [27/Apr/2023:21:51:56 +0000] "GET /v1/tours/getTourByMonth HTTP/1.1" 200 54
+::1 - - [27/Apr/2023:21:52:05 +0000] "GET /v1/tours/getTourByMonth/2021 HTTP/1.1" 200 54
+::1 - - [27/Apr/2023:21:53:01 +0000] "GET /v1/tours/getTourByMonth/2021 HTTP/1.1" 200 674

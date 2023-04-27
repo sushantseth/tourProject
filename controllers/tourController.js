@@ -158,6 +158,7 @@ exports.getTourByMonth = async (req, res) => {
    try {
     const result = await Tour.aggregate([
         {$unwind : '$startDates'},
+        {$match : {startDates : {$gte : new Date(`${req.params.year}-01-01`) , $lte : new Date(`${req.params.year}-12-31`)}}},
         {$group : 
             {
             _id : {$month : '$startDates'},

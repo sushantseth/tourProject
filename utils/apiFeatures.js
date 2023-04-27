@@ -24,7 +24,7 @@ exports.queryFunction = (model, queryObj) => {
 
       if(queryObj.sort){
         const sortBy = queryObj.sort.split(",").join(" ")
-         query.sort(sortBy)
+         query = query.sort(sortBy)
       }
 
       if(queryObj.fields){
