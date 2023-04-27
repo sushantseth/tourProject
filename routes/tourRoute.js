@@ -8,9 +8,11 @@ const Controller = require('../controllers/tourController')
 // Router.param('id',Controller.checkID)
 
 Router.route('/top5tour').get(Controller.aliasTop5Tour , Controller.getTours)
-
-Router.route('/:id').get(Controller.getTourById).patch(Controller.updateTourById).delete(Controller.deleteTourById)
 Router.route('/').post( Controller.addTour).get(Controller.getTours)
+Router.route('/tourStats').get(Controller.tourStats)
+Router.route('/getTourByMonth/:year?').get(Controller.getTourByMonth)
+Router.route('/:id').get(Controller.getTourById).patch(Controller.updateTourById).delete(Controller.deleteTourById)
+
 
 
 module.exports  = Router
