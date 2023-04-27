@@ -1,5 +1,5 @@
 const Tour = require('../models/tourModel')
-
+const {queryFunction} = require('../utils/apiFeatures')
 //add alias middleware for top5Tours
 exports.aliasTop5Tour = (req,res,next) => {
   req.query.sort = "-ratingsAverage,-price"
@@ -29,7 +29,6 @@ exports.aliasTop5Tour = (req,res,next) => {
     try{
     
     const params = Number(req.params.id)
-    console.log(req.query)
     const result = await Tour.find({id:params})
     return res.status(200).json({
         status :"success",
@@ -46,53 +45,10 @@ exports.aliasTop5Tour = (req,res,next) => {
     }
 }
 
+
 exports.getTours = async(req,res)=>{
     try{
-    
-    console.log(req.query)
-    let queryObj = {...req.query}
-    const excludedFields = ["page","sort","limit","fields"]
-    excludedFields.forEach(el => delete queryObj[el])
-    // console.log(queryObj)
-    const updatedQuery = JSON.parse(JSON.stringify(queryObj).replace(/\b(gte|gt|lte|lt)\b/g, match => {
-        switch (match) {
-          case 'gte':
-            return '$gte';
-          case 'gt':
-            return '$gt';
-          case 'lte':
-            return '$lte';
-          case 'lt':
-            return '$lt';
-          default:
-            return match;
-        }
-      }));
-
-    let query =  Tour.find(updatedQuery)
-    
-
-    //price mentioned in query params for sorting (?sort=price)
-    if(req.query.sort){
-        const sortBy = req.query.sort.split(",").join(" ")
-         query.sort(sortBy)
-    }
-     //used to project only provided fields
-    if(req.query.fields){
-     const selectBy = req.query.sort.split(",").join(" ")
-     query = query.select(selectBy)
-    }else{
-     //this will remove those fields in the response
-     query = query.select("-createdDate") 
-    }
-     //implement skip and limit as well
-     if(req.query.limit){
-        console.log("inside limit")
-       let limit = req.query.limit ?  req.query.limit : 3
-       let page = req.query.page ? req.query.page : 1 
-       let skipValue = ( page - 1 ) * 3 
-     query =  query.skip(skipValue).limit(limit)
-     }
+    const query = queryFunction(Tour,req.query)
     const result = await query
     return res.status(200).json({
         status :"success",
@@ -101,7 +57,6 @@ exports.getTours = async(req,res)=>{
             result:result
         }
     })
-
     }catch(err){
         return res.status(400).json({
             status:"fail",
@@ -168,6 +123,64 @@ exports.deleteTourById = async(req,res)=>{
     }
 }
 
+exports.tourStats = async (req,res) => {
+try{
+    console.log("inside tourStats")
+
+    const result = await Tour.aggregate([
+        {$match : 
+            {ratingsAverage : {$gte : 4.7}}
+        },
+        {$group : 
+            {_id : "$difficulty",
+             avgRating : {$avg : "$ratingsAverage"},
+            minimumPrice : {$min : "$price"},
+            maxPrice : {$max : "$price"}   
+            }
+        },
+        {$sort : {avgRating : -1}}
+    ])
+    return res.status(200).json({
+        status :"success aggregation",
+        result : result
+    })
+
+}catch(err){
+    return res.status(400).json({
+        status:"fail",
+        errorMessage : err
+    })
+}
+
+}
+
+exports.getTourByMonth = async (req, res) => {
+   try {
+    const result = await Tour.aggregate([
+        {$unwind : '$startDates'},
+        {$group : 
+            {
+            _id : {$month : '$startDates'},
+            allTours : {$push : '$name'},
+            docCount : {$count : {}}    
+        }
+    },{
+        $project : {_id : 0}
+    }
+    ])
+
+    return res.status(200).json({
+        status :"success aggregation",
+        count : result.length,
+        result : result
+    })
+   } catch (err) {
+    return res.status(400).json({
+        status:"fail",
+        errorMessage : err
+   })
+}
+}
 // exports.checkBody = (req,res,next) => {
 //     console.log("req.body",req.body)
 //     if(!req.body.name){
