@@ -28,8 +28,8 @@ exports.aliasTop5Tour = (req,res,next) => {
  exports.getTourById = async(req,res)=>{
     try{
     
-    const params = Number(req.params.id)
-    const result = await Tour.find({id:params})
+    const params = req.params.id
+    const result = await Tour.find({_id:params})
     return res.status(200).json({
         status :"success",
         message:{
@@ -60,7 +60,7 @@ exports.getTours = async(req,res)=>{
     }catch(err){
         return res.status(400).json({
             status:"fail",
-            errorMessage : err
+            errorMessage : err.toString()
         })
     }
 }
@@ -78,7 +78,7 @@ exports.getTours = async(req,res)=>{
     }catch(err){
        return res.status(400).json({
             status: "fail",
-            errorMessage : err
+            errorMessage : err.toString()
         })
     }
 
@@ -135,7 +135,8 @@ try{
             {_id : "$difficulty",
              avgRating : {$avg : "$ratingsAverage"},
             minimumPrice : {$min : "$price"},
-            maxPrice : {$max : "$price"}   
+            maxPrice : {$max : "$price"},
+            totalDocs : {$count : {}}   
             }
         },
         {$sort : {avgRating : -1}}
@@ -158,7 +159,6 @@ exports.getTourByMonth = async (req, res) => {
    try {
     const result = await Tour.aggregate([
         {$unwind : '$startDates'},
-        {$match : {startDates : {$gte : new Date(`${req.params.year}-01-01`) , $lte : new Date(`${req.params.year}-12-31`)}}},
         {$group : 
             {
             _id : {$month : '$startDates'},
