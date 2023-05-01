@@ -1,5 +1,6 @@
 const Tour = require('../models/tourModel')
 const {queryFunction} = require('../utils/apiFeatures')
+const { appError } = require('../utils/appError')
 //add alias middleware for top5Tours
 exports.aliasTop5Tour = (req,res,next) => {
   req.query.sort = "-ratingsAverage,-price"
@@ -25,11 +26,15 @@ exports.aliasTop5Tour = (req,res,next) => {
 // }
 
 
- exports.getTourById = async(req,res)=>{
+ exports.getTourById = async(req,res,next)=>{
     try{
     
     const params = req.params.id
-    const result = await Tour.find({_id:params})
+    const result = await Tour.findOne({_id:params})
+
+    if(!result){
+        return next(appError("Tour not found with the id provided",404))
+    }
     return res.status(200).json({
         status :"success",
         message:{
@@ -49,6 +54,7 @@ exports.aliasTop5Tour = (req,res,next) => {
 exports.getTours = async(req,res)=>{
     try{
     const query = queryFunction(Tour,req.query)
+    
     const result = await query
     return res.status(200).json({
         status :"success",
@@ -91,6 +97,9 @@ exports.updateTourById = async(req,res)=>{
         {new : true,
         upsert : false,
         runValidators: true})
+        if(!result){
+            return next(appError("Tour not found with the id provided",404))
+        }
     return res.status(200).json({
         status :"success",
         message:{
@@ -110,6 +119,9 @@ exports.deleteTourById = async(req,res)=>{
     try{
     const params = Number(req.params.id)
     const result = await Tour.findOneAndDelete({id:params})
+    if(!result){
+        return next(appError("Tour not found with the id provided",404))
+    }
     return res.status(204).json({
         status :"success",
     

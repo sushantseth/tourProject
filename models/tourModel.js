@@ -8,15 +8,30 @@ const tourSchema = new mongoose.Schema({
         type : String,
         required : [true, "name not mentioned"],
         unique : true,
-        trim : true
+        trim : true,
+        minLength : [10, "minimum length accepted is 10"],
+        maxLength : [40, "maximum length accepted is 40"]
     },
     ratingsAverage : {
         type : Number,
-        default : 4
+        default : 4,
+        min : [1, "minimum rating accepted is 1"],
+        max : [5, "maximum rating accepted is 5"]
     },
     price : {
         type : Number,
         required : [true, "price not mentioned"]
+    },
+    discountPrice : {
+        type : Number,
+        //does not work for update. Only create
+        validate : {
+            validator : function (val){
+                //this returns either true or false. in case false, then message is received in response
+                return val < this.price
+            },
+            message : "discountPrice greater than price "
+        }
     },
     summary : {
         type : String,
@@ -26,7 +41,11 @@ const tourSchema = new mongoose.Schema({
     difficulty : {
         type : String,
         enum : ["difficult","medium","easy"],
-        required : [true, "difficulty not provided"]
+        required : [true, "difficulty not provided"],
+        enum : {
+            values : ["easy", "medium", "difficult"],
+            message : ["values accepted : easy, medium, difficult"]
+        }
     },
     maxGroupSize : {
         type : Number,
@@ -57,10 +76,9 @@ const tourSchema = new mongoose.Schema({
     toObject : {virtuals:true}
 })
 
-tourSchema.virtual('shortSummary').get(function(){
-    return this.summary.slice(0,10)
-})
-
+// tourSchema.virtual('discount').get(function(){
+//     return this.price/2
+// })
 //document middleware
 
 tourSchema.pre('save',function(next){

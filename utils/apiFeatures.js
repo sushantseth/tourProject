@@ -1,6 +1,6 @@
 exports.queryFunction = (model, queryObj) => {
 
-    console.log(queryObj)
+    console.log("queryObj : ",queryObj)
     let finalqueryObj = {...queryObj}
     const excludedFields = ["page","sort","limit","fields"]
     excludedFields.forEach(el => delete finalqueryObj[el])
@@ -28,14 +28,13 @@ exports.queryFunction = (model, queryObj) => {
       }
 
       if(queryObj.fields){
-        const selectBy = queryObj.sort.split(",").join(" ")
+        const selectBy = queryObj.fields.split(",").join(" ")
         query = query.select(selectBy)
        }else{
         query = query.select("-createdDate") 
        }
 
        if(queryObj.limit){
-        console.log("inside limit")
        let limit = queryObj.limit ?  queryObj.limit : 3
        let page = queryObj.page ? queryObj.page : 1 
        let skipValue = ( page - 1 ) * 3 
