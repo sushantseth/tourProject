@@ -44,7 +44,9 @@ const userSchema = mongoose.Schema({
             message : "password verification error"
         }
     },
-    passwordUpdateDate : Date
+    passwordUpdateDate : String,
+    otp : Number,
+    otpexpiresIn : Date
 })
 
 

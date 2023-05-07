@@ -3,6 +3,9 @@ const jwt = require('jsonwebtoken')
 const { appError } = require('../utils/appError')
 const bcrypt = require('bcryptjs')
 const util = require('util')
+const {generateOTP} = require('../utils/createOTP')
+const {getMail} = require('../utils/emailFeature')
+
 const jwtSign = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN })
 }
@@ -66,18 +69,14 @@ exports.protect = async (req, res, next) => {
 
         // 2 - check if token is correct
         const decodedVal = await util.promisify(jwt.verify)(token, process.env.JWT_SECRET)
-
+        console.log(decodedVal)
         // 3 - check if the user still exists
         const userData = await User.findById({ _id: decodedVal.id })
-        if (!userData) {
-            return next(appError("user does not exist.", 401))
-
-        }
+        if (!userData)  return next(appError("user does not exist.", 401))
 
         // 4 - check if user changed the password
-        if (userData.passwordUpdateDate > decodedVal.iat) {
-            return next(appError("password changed. Login again", 401))
-        }
+        if (userData.passwordUpdateDate > decodedVal.iat) return next(appError("password changed. Login again", 401))
+
         req.user = userData
         return next()
     } catch (error) {
@@ -95,4 +94,82 @@ exports.ristrict = (req, res, next) => {
 
     }
     return next()
+}
+
+exports.forgotPassword = async (req,res,next) => {
+    try {
+
+
+    //1 - find a user with the email
+    const userData = await User.findOne({email : req.body.email})   
+    if(!userData) return next(appError('user not found with this mail id',401))
+
+
+
+    //2 - if user present, generate a 6 digit OTP and expiry time and store in user db
+    const {otp, expiresIn} = generateOTP()    
+    await  User.findOneAndUpdate({email : req.body.email},{otp : Number(otp) , otpexpiresIn : expiresIn })
+
+
+
+     //3 - send the otp to usermail
+    const email = req.body.email
+    const subject = `One time password (OTP)`
+    const message = `Your One time Password which is valid for 10 minutes is. : ${otp} at time : ${new Date()}`
+    await getMail({
+            email,
+            subject,
+            message
+        })
+      
+ 
+    return res.status(200).json({
+        status : 'success',
+        message : 'OTP sent to email id'
+    })
+ 
+    } catch (error) {
+        const otp = undefined
+        const otpexpiresIn = undefined
+        await  User.findOneAndUpdate({email : req.body.email}, { $unset: { otp: "", otpexpiresIn: "" } })
+        return next(appError('error in sending mail',500))
+    }
+}
+
+exports.resetPassword = async (req, res, next) => {
+    try {
+    const userOTP = req.params.otp;
+    const oldPassword = req.body.oldPassword;
+    const newPassword = req.body.newPassword;
+    const confirmNewPassword = req.body.confirmNewPassword;
+    const now = new Date(); 
+    const expiresIn = new Date(now.getTime());
+    const userData = await User.findOne({otp : userOTP, otpexpiresIn : {$gt : expiresIn}})
+    if(!userData) return next(appError('user not found',401))
+
+    if(!(userData.otp == userOTP && expiresIn < userData.otpexpiresIn)) return next(appError('OTP expired or invalid OTP',401))
+
+    if(!oldPassword && !newPassword && !confirmNewPassword) return next(appError('enter all fields',401))
+
+    if(!(await bcrypt.compare(oldPassword,userData.password))) return next(appError('invalid old password',401))
+
+    if(newPassword.length < 10) return next(appError('password length > 10',401))
+
+    if(oldPassword == newPassword) return next(appError('new Password cannot be same as old password',401))
+
+    if(newPassword !== confirmNewPassword) return next(appError('new password and confirm password doesnt match',401))
+
+    const encryptedNewPass = await bcrypt.hash(newPassword,12)
+
+    await User.findOneAndUpdate({email : userData.email},
+        {password : encryptedNewPass, passwordUpdateDate : new Date().getTime()/1000, $unset: { otp: "", otpexpiresIn: "" } })
+
+    return res.status(200).json({
+        status : 'success'
+    })
+    } catch (error) {
+    
+            next(appError(error.toString(),500))
+        
+    }
 }
