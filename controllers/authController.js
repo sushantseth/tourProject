@@ -129,8 +129,7 @@ exports.forgotPassword = async (req,res,next) => {
     })
  
     } catch (error) {
-        const otp = undefined
-        const otpexpiresIn = undefined
+        
         await  User.findOneAndUpdate({email : req.body.email}, { $unset: { otp: "", otpexpiresIn: "" } })
         return next(appError('error in sending mail',500))
     }
@@ -139,15 +138,14 @@ exports.forgotPassword = async (req,res,next) => {
 exports.resetPassword = async (req, res, next) => {
     try {
     const userOTP = req.params.otp;
-    const oldPassword = req.body.oldPassword;
-    const newPassword = req.body.newPassword;
-    const confirmNewPassword = req.body.confirmNewPassword;
+    const {oldPassword, newPassword, confirmNewPassword} = req.body;
+    
     const now = new Date(); 
-    const expiresIn = new Date(now.getTime());
-    const userData = await User.findOne({otp : userOTP, otpexpiresIn : {$gt : expiresIn}})
+    const currentTime = new Date(now.getTime());
+    const userData = await User.findOne({otp : userOTP, otpexpiresIn : {$gt : currentTime}})
     if(!userData) return next(appError('user not found',401))
 
-    if(!(userData.otp == userOTP && expiresIn < userData.otpexpiresIn)) return next(appError('OTP expired or invalid OTP',401))
+    if(!(userData.otp == userOTP && currentTime < userData.otpexpiresIn)) return next(appError('OTP expired or invalid OTP',401))
 
     if(!oldPassword && !newPassword && !confirmNewPassword) return next(appError('enter all fields',401))
 
