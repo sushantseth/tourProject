@@ -69,7 +69,6 @@ exports.protect = async (req, res, next) => {
 
         // 2 - check if token is correct
         const decodedVal = await util.promisify(jwt.verify)(token, process.env.JWT_SECRET)
-        console.log(decodedVal)
         // 3 - check if the user still exists
         const userData = await User.findById({ _id: decodedVal.id })
         if (!userData)  return next(appError("user does not exist.", 401))
@@ -138,7 +137,7 @@ exports.forgotPassword = async (req,res,next) => {
 exports.resetPassword = async (req, res, next) => {
     try {
     const userOTP = req.params.otp;
-    const {oldPassword, newPassword, confirmNewPassword} = req.body;
+    const {newPassword, confirmNewPassword} = req.body;
     
     const now = new Date(); 
     const currentTime = new Date(now.getTime());
@@ -147,13 +146,11 @@ exports.resetPassword = async (req, res, next) => {
 
     if(!(userData.otp == userOTP && currentTime < userData.otpexpiresIn)) return next(appError('OTP expired or invalid OTP',401))
 
-    if(!oldPassword && !newPassword && !confirmNewPassword) return next(appError('enter all fields',401))
-
-    if(!(await bcrypt.compare(oldPassword,userData.password))) return next(appError('invalid old password',401))
+    if(!newPassword && !confirmNewPassword) return next(appError('enter all fields',401))
 
     if(newPassword.length < 10) return next(appError('password length > 10',401))
 
-    if(oldPassword == newPassword) return next(appError('new Password cannot be same as old password',401))
+    if(await bcrypt.compare(newPassword, req.user.password) === true) return next(appError('new Password cannot be same as old password',401))
 
     if(newPassword !== confirmNewPassword) return next(appError('new password and confirm password doesnt match',401))
 

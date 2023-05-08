@@ -46,7 +46,12 @@ const userSchema = mongoose.Schema({
     },
     passwordUpdateDate : String,
     otp : Number,
-    otpexpiresIn : Date
+    otpexpiresIn : Date,
+    isActive : {
+        type : Boolean,
+        default : true,
+        select : false
+    }
 })
 
 

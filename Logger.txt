@@ -196,3 +196,12 @@
 ::1 - - [07/May/2023:20:36:07 +0000] "POST /v1/users/login HTTP/1.1" 200 183
 ::1 - - [07/May/2023:20:37:37 +0000] "POST /v1/users/login HTTP/1.1" 200 183
 ::1 - - [07/May/2023:20:37:54 +0000] "GET /v1/tours HTTP/1.1" 200 8796
+::1 - - [08/May/2023:13:36:42 +0000] "POST /v1/users/login HTTP/1.1" 400 332
+::1 - - [08/May/2023:13:36:55 +0000] "POST /v1/users/login HTTP/1.1" 200 183
+::1 - - [08/May/2023:13:37:00 +0000] "PATCH /v1/users/updateProfile HTTP/1.1" 200 302
+::1 - - [08/May/2023:14:27:37 +0000] "POST /v1/users/login HTTP/1.1" 200 183
+::1 - - [08/May/2023:14:28:08 +0000] "DELETE /v1/users/deleteProfile HTTP/1.1" - -
+::1 - - [08/May/2023:14:34:00 +0000] "DELETE /v1/users/deleteProfile HTTP/1.1" 204 -
+::1 - - [08/May/2023:14:34:12 +0000] "GET /v1/users/ HTTP/1.1" 200 472
+::1 - - [08/May/2023:14:36:19 +0000] "GET /v1/users/ HTTP/1.1" 200 472
+::1 - - [08/May/2023:14:36:49 +0000] "GET /v1/users/ HTTP/1.1" 200 197

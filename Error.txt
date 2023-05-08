@@ -146,3 +146,13 @@
 ::1 - - [07/May/2023:20:23:27 +0000] "PATCH /v1/users/resetPassword/260785 HTTP/1.1" 401 313
 ::1 - - [07/May/2023:20:23:53 +0000] "GET /v1/tours HTTP/1.1" 401 399
 ::1 - - [07/May/2023:20:32:12 +0000] "PATCH /v1/users/resetPassword/260785 HTTP/1.1" 401 376
+::1 - - [08/May/2023:13:36:24 +0000] "PATCH /v1/users/updateProfile HTTP/1.1" 401 1329
+::1 - - [08/May/2023:13:36:31 +0000] "PATCH /v1/users/updateProfile HTTP/1.1" 401 399
+::1 - - [08/May/2023:13:36:42 +0000] "POST /v1/users/login HTTP/1.1" 400 332
+::1 - - [08/May/2023:14:21:24 +0000] "PATCH /v1/users/resetPassword/260785 HTTP/1.1" 401 376
+::1 - - [08/May/2023:14:27:08 +0000] "DELETE /v1/users/deleteProfile HTTP/1.1" 401 1329
+::1 - - [08/May/2023:14:27:31 +0000] "DELETE /v1/users/login HTTP/1.1" 404 1208
+::1 - - [08/May/2023:14:28:35 +0000] "DELETE /v1/users/deleteProfile HTTP/1.1" 500 643
+::1 - - [08/May/2023:14:28:50 +0000] "DELETE /v1/users/deleteProfile HTTP/1.1" 500 605
+::1 - - [08/May/2023:14:29:36 +0000] "DELETE /v1/users/deleteProfile HTTP/1.1" 500 643
+::1 - - [08/May/2023:14:33:24 +0000] "DELETE /v1/users/deleteProfile HTTP/1.1" 500 605
