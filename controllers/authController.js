@@ -169,5 +169,35 @@ exports.resetPassword = async (req, res, next) => {
     
             next(appError(error.toString(),500))
         
+        
+    }
+}
+
+
+exports.updatePassword = async(req, res, next) => {
+    try {
+    //1 - before coming to the controller, check for a valid jwt
+    //2 - check old password
+    if(await bcrypt.compare(req.body.oldPassword, req.user.password) !== true) return next(appError('old password does not match',401))
+    //3 - compare new password and confirm password field and field len
+    if(req.body.oldPassword === req.body.newPassword) return next(appError('old password and new password cannt be same',401))
+    if(req.body.newPassword !== req.body.confirmNewPassword) return next(appError('new and confirm password does not match',401))
+    if(req.body.newPassword.length < 10) return next(appError('new password should be > 10',401))
+
+    //4 - bcrypt newpassword and replace password field in db
+    const encryptedPassword = await bcrypt.hash(req.body.newPassword,12)
+
+    //5 - send updated token
+    const token = jwtSign(req.user._id)
+
+    await User.findOneAndUpdate({_id : req.user._id},{password : encryptedPassword})
+    return res.status(200).json({
+        status : "sucess",
+        token
+    })
+    
+    } catch (error) {
+        await User.findOneAndUpdate({_id : req.user._id},{password : req.user.password})
+        return next(appError(error.toString(),500))
     }
 }
