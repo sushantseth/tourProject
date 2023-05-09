@@ -75,6 +75,11 @@ userSchema.pre('save', async function(next){
   
 })
 
+userSchema.pre(/^find/, function(next){
+    this.where({isActive : {$ne : false}})
+    return next()
+})
+
 const User = mongoose.model('user',userSchema)
 
 
