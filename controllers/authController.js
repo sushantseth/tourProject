@@ -6,6 +6,18 @@ const util = require('util')
 const {generateOTP} = require('../utils/createOTP')
 const {getMail} = require('../utils/emailFeature')
 
+// const setCookie = (jwt, environment, expiry) =>{
+//     const cookieOptions = {
+//         maxAge :  expiry * 24 * 60 * 60 * 1000,
+//         httpOnly : true
+//     }
+//     if(environment === 'production'){
+//         //for only https protocols
+//         cookieOptions.secure = true 
+//     }
+//     res.cookie('jwt', jwt, cookieOptions)
+// }
+
 const jwtSign = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN })
 }
@@ -15,7 +27,16 @@ exports.signup = async (req, res, next) => {
         const newUser = await User.create(req.body)
 
         const token = jwtSign(newUser._id)
-
+        // setCookie(token, process.env.NODE_ENV, process.env.COOKIE_JWT_EXPIRES_IN)
+        const cookieOptions = {
+            maxAge :  process.env.COOKIE_JWT_EXPIRES_IN * 24 * 60 * 60 * 1000,
+            httpOnly : true
+        }
+        if(process.env.NODE_ENV === 'production'){
+            //for only https protocols
+            cookieOptions.secure = true 
+        }
+        res.cookie('jwt', token, cookieOptions)
 
         return res.status(200).json({
             status: "success",
@@ -26,6 +47,7 @@ exports.signup = async (req, res, next) => {
         })
 
     } catch (error) {
+        await User.findOneAndDelete({email : req.body.email})
         return res.status(400).json({
             error: error.toString()
         })
@@ -98,9 +120,10 @@ exports.ristrict = (req, res, next) => {
 exports.forgotPassword = async (req,res,next) => {
     try {
 
-
+    
     //1 - find a user with the email
     const userData = await User.findOne({email : req.body.email})   
+    console.log(userData)
     if(!userData) return next(appError('user not found with this mail id',401))
 
 
@@ -194,7 +217,6 @@ exports.updatePassword = async(req, res, next) => {
     })
     
     } catch (error) {
-        await User.findOneAndUpdate({_id : req.user._id},{password : req.user.password})
         return next(appError(error.toString(),500))
     }
 }
