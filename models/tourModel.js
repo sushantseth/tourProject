@@ -1,6 +1,7 @@
 
 const mongoose = require('mongoose')
 const Counter = require('../models/counterModel')
+const User = require('./userModel')
 
 //created schema
 const tourSchema = new mongoose.Schema({
@@ -69,7 +70,22 @@ const tourSchema = new mongoose.Schema({
         type : String,
         trim : true
     },
-    secretTour : Boolean
+    secretTour : Boolean,
+    locations : [
+        {
+            type : {
+                type : String,
+                default : 'Point',
+                enum : ['Point']
+            },
+            description : String,
+            coordinates : [Number],
+            day : Number
+        }
+], guides : [{
+    type : mongoose.Schema.Types.ObjectId,
+    ref : 'User'
+}]
 
 },{
     toJSON : {virtuals:true},
@@ -81,9 +97,10 @@ const tourSchema = new mongoose.Schema({
 // })
 //document middleware
 
-tourSchema.pre('save',function(next){
+tourSchema.pre('save',async function(next){
+    // this.guides = await User.find({_id : {$in : this.guides}})
     const Tour = mongoose.model('Tour',tourSchema)
-    Tour.findOne({name : this.name})
+       Tour.findOne({name : this.name})
     .then((data)=>{
         if(data){
             return next(new Error("tour already exists"))
