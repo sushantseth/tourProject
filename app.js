@@ -7,6 +7,7 @@ const {appError} = require('./utils/appError')
 app.use(express.json())
 const tourRouter = require('./routes/tourRoute')
 const userRouter = require('./routes/userRoute')
+const reviewRouter = require('./routes/reviewRoute')
 const rateLimit = require('express-rate-limit')
 const helmet = require('helmet')
 const xss = require('xss-clean')
@@ -55,6 +56,8 @@ app.use('/v1', apiLimiter)
 
 app.use('/v1/tours',tourRouter)
 app.use('/v1/users',userRouter)
+app.use('/v1/reviews',reviewRouter)
+
 
 app.all("*",(req,res,next)=>{
  next(appError("invalid route",404))
